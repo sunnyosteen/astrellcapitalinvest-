@@ -106,24 +106,23 @@ WSGI_APPLICATION = 'astrellcapitalinvest.wsgi.application'
 #         },
 #     }
 # }
-
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 if DEBUG:
     print("🔵 Using SQLITE3 (Local Development)")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
 else:
-    print("🟢 Using POSTGRESQL (Production - Railway)")
+    print("🟢 Using POSTGRESQL (Railway Production)")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -133,11 +132,8 @@ else:
             "HOST": os.getenv("DB_HOST"),
             "PORT": os.getenv("DB_PORT"),
             "OPTIONS": {"sslmode": "require"},
-
         }
     }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
