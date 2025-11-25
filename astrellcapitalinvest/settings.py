@@ -20,13 +20,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4fzmzo!#)ufj(&$hr#n%jvesd$^x@f3f#9sp+j$p+_#08!h-j+'
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Build paths inside the project
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file
+load_dotenv()
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
+
+# Application definition
 
 # Application definition
 
@@ -38,16 +52,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
+    'userprofile',
+    'django_countries',
+    'connectwallet',
+    'investment',
+    'widget_tweaks',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'astrellcapitalinvest.urls'
@@ -73,12 +95,48 @@ WSGI_APPLICATION = 'astrellcapitalinvest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",
+#         'OPTIONS': {
+#             'timeout': 30,  # wait 20 seconds before failing
+#         },
+#     }
+# }
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+DEBUG = os.getenv("DEBUG", "True") == "True"
+
+if DEBUG:
+    print("🔵 Using SQLITE3 (Local Development)")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
+
+else:
+    print("🟢 Using POSTGRESQL (Production - Railway)")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+            "OPTIONS": {"sslmode": "require"},
+
+        }
+    }
+
 
 
 # Password validation
@@ -115,13 +173,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
 
-# This is optional if your static folder is at project root
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # points to your root-level static folder
-]
+STATIC_URL = "/static/"
+
+if DEBUG:
+    # LOCAL DEVELOPMENT (Django serves static files)
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",   # only if you have a local static/ folder
+    ]
+else:
+    # PRODUCTION (WhiteNoise serves static files)
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # For production (collectstatic)
 STATIC_ROOT = BASE_DIR / "staticfiles"  
@@ -131,3 +195,89 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+
+
+
+
+LOGIN_URL = '/userprofile/login/'
+# Force HTTPS in Django
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'support@host.com'
+EMAIL_HOST_PASSWORD = ''   # Zoho APP PASSWORD
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ADMIN_EMAIL = "support@admin.com"
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name}:{lineno} - {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'debug_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'error.log',
+            'level': 'ERROR',
+            'formatter': 'verbose',
+        },
+    },
+
+    'loggers': {
+        # Catch ALL logs from ALL apps, libraries, and Django itself
+        '': {   # root logger (VERY IMPORTANT)
+            'handlers': ['console', 'debug_file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+
+        # Django internal logging (500 errors, warnings)
+        'django': {
+            'handlers': ['console', 'error_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        # Django request/response exceptions
+        'django.request': {
+            'handlers': ['error_file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    }
+}
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.up.railway.app",
+    "https://yourcustomdomain.com",   # if you have one
+]
+

@@ -33,28 +33,27 @@
 </head>
 
 <body class="index-page">
-
-  <header id="header" class="header d-flex align-items-center fixed-top">
+<header id="header" class="header d-flex align-items-center fixed-top">
     <div class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-<img src="{% static 'assets/images/logo4.png' %}" alt="" class="nav-logo"> 
-
-        <!-- <h1 class="sitename">Astrell</h1> -->
+      <!-- LOGO FIRST -->
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="{% static 'assets/images/logo4.png' %}" alt="" class="nav-logo">
       </a>
 
       <style>
-       .nav-logo {
-    width: 170px;              /* Adjust width only */
-    height: auto;              /* Prevent stretching */
-    border-radius: 12px;       /* Rounded corners */
-    object-fit: contain;       /* Keeps quality sharp */
-}
-
-
+        .nav-logo {
+            width: 170px;
+            height: auto;
+            border-radius: 12px;
+            object-fit: contain;
+        }
       </style>
 
+      <!-- TRANSLATOR SECOND -->
+      <div id="google_translate_element" class="translate-box"></div>
+
+      <!-- NAV MENU THIRD -->
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Home</a></li>
@@ -62,34 +61,234 @@
           <li><a href="#features">Market</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#pricing">Investment</a></li>
-          <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
           <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="#about">Get Started</a>
+      <!-- GET STARTED LAST -->
+      {% if user.is_authenticated %}
+        <a class="btn-getstarted" href="{% url 'userprofile:dashboard' %}">
+            <i class="bi bi-person-circle"></i> {{ user.username }}
+        </a>
+      {% else %}
+        <a class="btn-getstarted" href="{% url 'userprofile:login' %}">
+            <i class="bi bi-wallet2"></i>Get Started
+        </a>
+      {% endif %}
+
+      <style>
+        /* Get Started Button */
+        .btn-getstarted {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 25px;
+            background-color: #0b1ae9;
+            color: #ffffff;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .btn-getstarted:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(11, 26, 233, 0.4);
+            background-color: #242859;
+        }
+        @media (max-width: 480px) {
+            .btn-getstarted {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Translator UI */
+        .translate-box {
+            margin-left: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            flex-shrink: 0;
+        }
+
+        /* Hide Google Branding */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-logo-link,
+        .goog-te-gadget span {
+            display: none !important;
+        }
+        body { top: 0 !important; }
+
+        /* RESPONSIVENESS */
+        @media (max-width: 992px) {
+            #google_translate_element {
+                transform: scale(0.9);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #google_translate_element {
+                transform: scale(0.85);
+                margin-left: 5px;
+            }
+            .nav-logo {
+                width: 140px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            #google_translate_element {
+                transform: scale(0.75);
+                margin-left: 0;
+            }
+            .nav-logo {
+                width: 120px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            #google_translate_element {
+                transform: scale(0.65);
+            }
+            .nav-logo {
+                width: 105px;
+            }
+        }
+
+      </style>
+
+      <style>
+  /* Translator UI */
+  .translate-box {
+      margin-left: 15px;
+      background: rgba(255,255,255,0.15);
+      padding: 6px 10px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      flex-shrink: 0;
+  }
+
+  /* Hide Google Branding */
+  .goog-te-banner-frame.skiptranslate,
+  .goog-logo-link,
+  .goog-te-gadget span {
+      display: none !important;
+  }
+  body { top: 0 !important; }
+
+  /* --- RESPONSIVENESS --- */
+
+  /* Large tablets */
+  @media (max-width: 992px) {
+      .header-container {
+          gap: 10px;
+      }
+      #google_translate_element {
+          transform: scale(0.9);
+      }
+  }
+
+  /* Tablets */
+  @media (max-width: 768px) {
+
+      /* Keep logo & translator on same row */
+      .header-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 6px;
+      }
+
+      /* Logo shrink */
+      .nav-logo {
+          width: 130px;
+      }
+
+      /* Translator shrink */
+      #google_translate_element {
+          transform: scale(0.80);
+          margin-left: 5px;
+      }
+
+      /* Keep translator beside logo */
+      .translate-box {
+          order: 2;
+      }
+  }
+
+  /* Small phones */
+  @media (max-width: 575px) {
+
+      .nav-logo {
+          width: 110px;
+      }
+
+      #google_translate_element {
+          transform: scale(0.72);
+          margin-left: 2px;
+      }
+
+      /* Menu icon closer */
+      .mobile-nav-toggle {
+          margin-left: 6px;
+      }
+  }
+
+  /* Extra small phones */
+  @media (max-width: 430px) {
+      .nav-logo {
+          width: 95px;
+      }
+
+      #google_translate_element {
+          transform: scale(0.62);
+          margin-left: 0;
+      }
+
+      .translate-box {
+          padding: 4px 6px;
+      }
+  }
+</style>
+
 
     </div>
-  </header>
+</header>
 
-  
+<!-- GOOGLE TRANSLATOR SCRIPT (STANDARD LANGUAGES) -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,es,fr,de,it,pt,ru,zh-CN,ja,ar,ko,hi',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- 🔵 Google Translate Script -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,es,fr,de,it,pt,ru,zh-CN,ja,ar,ko,hi',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <main class="main">
   <section id="hero" class="hero section py-1">
 
@@ -145,8 +344,8 @@
 
             <!-- Hero Actions -->
             <div class="hero-actions mb-4" data-aos="fade-up" data-aos-delay="600">
-              <a href="#about" class="btn-primary">Start Investing Today</a>
-              <a href="#portfolio" class="btn-outline">See Our Success Stories</a>
+              <a href="{% url 'userprofile:dashboard'%}" class="btn-primary">Start Investing Today</a>
+              <a href="{% url 'userprofile:dashboard'%}" class="btn-outline">See Our Success Stories</a>
             </div>
 
             <!-- Hero Metrics -->
@@ -383,7 +582,7 @@
                 <span>Automated Alerts</span>
               </div>
             </div>
-            <a href="service-details.html" class="btn-primary">Get Started Free</a>
+            <a href="{%url 'userprofile:dashboard'%}" class="btn-primary">Get Started Free</a>
           </div>
         </div>
 
@@ -690,8 +889,8 @@
 
     <!-- Call to Action -->
     <div class="cta-section text-center mt-5" data-aos="fade-up" data-aos-delay="500">
-      <a href="#pricing" class="btn btn-primary me-3">Choose Your Plan</a>
-      <a href="#contact" class="btn btn-outline-secondary">Get In Touch</a>
+      <a href="{% url 'userprofile:dashboard'%}" class="btn btn-primary me-3">Choose Your Plan</a>
+      <a href="mailto:info@astrellcapital.com" class="btn btn-outline-secondary">Get In Touch</a>
     </div>
 
   </div>
@@ -834,7 +1033,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan blinking-btn">Invest Now</a>
+            <a  href="{%url 'userprofile:dashboard'%}" class="btn-plan blinking-btn">Invest Now</a>
           </div>
         </div>
       </div><!-- End Package 1 -->
@@ -865,7 +1064,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan">Invest Now</a>
+            <a href="{%url 'userprofile:dashboard'%}" class="btn-plan">Invest Now</a>
           </div>
         </div>
       </div><!-- End Package 2 -->
@@ -895,7 +1094,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan blinking-btn">Invest Now</a>
+            <a href="{%url 'userprofile:dashboard'%}" class="btn-plan blinking-btn">Invest Now</a>
           </div>
         </div>
       </div><!-- End Package 3 -->
@@ -926,7 +1125,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan blinking-btn">Invest Now</a>
+            <a  href="{%url 'userprofile:dashboard'%}" class="btn-plan blinking-btn">Invest Now</a>
           </div>
         </div>
       </div><!-- End Package 4 -->
@@ -956,7 +1155,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan blinking-btn">Invest Now</a>
+            <a  href="{%url 'userprofile:dashboard'%}" class="btn-plan blinking-btn">Invest Now</a>
           </div>
         </div>
       </div><!-- End Christmas Bonus 1 -->
@@ -986,7 +1185,7 @@
             </ul>
           </div>
           <div class="plan-cta">
-            <a href="#" class="btn-plan blinking-btn">Invest Now</a>
+            <a  href="{%url 'userprofile:dashboard'%}" class="btn-plan blinking-btn">Invest Now</a>
           </div>
         </div>
       </div><!-- End Christmas Bonus 2 -->
@@ -1242,7 +1441,7 @@ document.getElementById('clearBtn').addEventListener('click', function() {
           <h3 class="mb-3">Send Us a Message</h3>
           <p class="text-muted mb-4">Have questions about our investment packages or ROI plans? Fill out the form below, and our team will respond promptly.</p>
 
-          <form class="php-email-form modern-form">
+          <form class="php-email-form moderformn-">
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <input type="text" name="name" class="form-control" placeholder="Full Name" required>
@@ -1383,7 +1582,7 @@ document.getElementById('clearBtn').addEventListener('click', function() {
       </div>
 
       <div class="text-center mt-3 text-muted small">
-        Designed by <a href="https://bootstrapmade.com/" class="text-decoration-none">AstrellCapitalInvest Company </a>
+        Designed by <a href="#" class="text-decoration-none">AstrellCapitalInvest Company </a>
       </div>
     </div>
 

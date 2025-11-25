@@ -1,0 +1,1344 @@
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{% block title %} {{user.username|capfirst}} | Dashboard{% endblock %}</title>
+
+  <!-- Favicons -->
+  {% load static %}
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="{% static 'assets/css/gfont1.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/gfont2.css' %}">
+
+  <!-- Bootstrap 5.3.0 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'assets/css/style-liberty.css' %}">
+
+  <style>
+    #sidebar {
+      width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #0d00c2;
+      overflow-x: hidden;
+      transition: 0.3s;
+      z-index: 9999;
+    }
+
+    #sidebar ul {
+      padding: 20px;
+    }
+
+    #sidebar ul li {
+      margin-bottom: 10px;
+    }
+
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+
+    #sidebar a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      display: block;
+      padding: 10px;
+    }
+
+    .close-btn {
+      color: white;
+      font-size: 36px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    #main-content {
+      transition: margin-left 0.3s;
+      padding-left: 0;
+    }
+
+    .open-menu-btn {
+      background-color: #0d00c2;
+      color: white;
+    }
+
+    .open-menu-btn:hover {
+      background-color: #0d00c2;
+    }
+
+
+    .content-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .user-info-card {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card-item {
+      flex: 1 1 100%;
+      margin: 10px;
+    }
+
+    @media (min-width: 576px) {
+      .card-item {
+        flex: 1 1 45%;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-item {
+        flex: 1 1 30%;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .card-item {
+        flex: 1 1 22%;
+      }
+    }
+
+    .list-unstyled li {
+      transition: background-color 0.3s ease, color 0.3s ease, padding-left 0.3s ease;
+    }
+
+    .list-unstyled li:hover {
+      background-color: #f9faf89a;
+      color: #28a745;
+      padding-left: 20px;
+      border-radius: 10px;
+    }
+
+    .list-unstyled li:hover a {
+      color: #28a745;
+    }
+
+    .list-unstyled li:hover i {
+      color: #28a745;
+    }
+
+    .profile-img {
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-img-navbar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .profile-img-welcome {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Keep menu button size consistent across devices */
+.open-menu-btn {
+  font-size: 16px;
+  padding: 8px 16px;
+  line-height: 1.2;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+@media (max-width: 576px) {
+  .open-menu-btn {
+    max-width: 80px !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+  }
+}
+
+  </style>
+
+  <style>
+    /* Breadcrumb Section */
+.w3l-about-breadcrumb {
+    position: relative;
+    color: #fff; /* default white text */
+}
+
+/* Breadcrumb Background */
+.breadcrumb-bg-about {
+    position: relative;
+    background: url('/static/assets/images/breadcrumb.jpeg') no-repeat center center;
+    background-size: cover;
+    /* border-radius: 10px; */
+    padding: 60px 0; /* enough top and bottom spacing */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Optional dark overlay for better readability */
+.breadcrumb-bg-about::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); /* adjust darkness */
+    z-index: 0;
+}
+
+/* Container inside breadcrumb */
+.breadcrumb-bg-about .container {
+    position: relative;
+    z-index: 1; /* text above overlay */
+}
+
+/* Breadcrumb Title */
+.w3l-about-breadcrumb .title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+    margin-bottom: 15px;
+}
+
+/* Breadcrumb Path */
+.breadcrumbs-custom-path {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Links in breadcrumb */
+.breadcrumbs-custom-path li a {
+    color: #ffffff; /* Welcome link white */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumbs-custom-path li a:hover {
+    color: #0b1ae9; /* accent color on hover */
+}
+
+/* Arrow separator */
+.breadcrumbs-custom-path li span.fa-arrow-right {
+    color: #ffffff;
+    font-size: 0.85rem;
+}
+
+/* Active breadcrumb (username) */
+.breadcrumbs-custom-path li.active {
+    color: #c8c6e3; /* light color for active item */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .w3l-about-breadcrumb .title {
+        font-size: 2rem;
+    }
+
+    .breadcrumbs-custom-path {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .w3l-about-breadcrumb .title {
+        font-size: 1.7rem;
+    }
+
+    .breadcrumbs-custom-path {
+        font-size: 0.85rem;
+        gap: 3px;
+    }
+}
+
+  </style>
+
+  <script>
+    function openNav() {
+      document.getElementById("sidebar").style.width = "250px";
+      document.getElementById("main-content").style.marginLeft = "250px";
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function closeNav() {
+      document.getElementById("sidebar").style.width = "0";
+      document.getElementById("main-content").style.marginLeft = "0";
+      document.getElementById("overlay").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const tabLinks = document.querySelectorAll(".tab-link");
+      const tabPanes = document.querySelectorAll(".tab-pane");
+
+      tabLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = this.getAttribute("href").substring(1);
+
+          tabPanes.forEach(pane => {
+            pane.classList.remove("show", "active");
+          });
+
+          document.getElementById(target).classList.add("show", "active");
+          closeNav();
+        });
+      });
+    });
+  </script>
+
+  <!-- Bootstrap JS CDN (Popper included) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="portfolio-details-page" style="background-color: #f0f0f0;">
+  
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="crypto-loader">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <span class="loader-text">AstrellCapitalInvest</span>
+        </div>
+    </div>
+
+  <div id="overlay" onclick="closeNav()"></div>
+
+  <div id="sidebar" class="sidebar text-white">
+    <button class="close-btn btn" onclick="closeNav()"></button>
+    <ul class="list-unstyled p-4">
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center tab-link" href="#dashboard">
+          <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center"  href="{% url 'select_wallet' %}">
+          <i class="bi bi-cash-coin me-2"></i> Auto Payout
+        </a>
+      </li>
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center tab-link" href="#deposit">
+          <i class="bi bi-box-arrow-in-down me-2"></i> Deposit
+        </a>
+      </li>
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center tab-link" href="#withdrawal">
+          <i class="bi bi-box-arrow-up me-2"></i> Withdrawal
+        </a>
+      </li>
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center tab-link" href="#transactions">
+          <i class="bi bi-receipt me-2"></i> Transactions
+        </a>
+      </li>
+      <!-- <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center" href="">
+            <i class="bi bi-cash-coin me-2"></i> Referral Bonus
+        </a>
+       </li> -->
+
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center tab-link" href="#profile">
+          <i class="bi bi-person-circle me-2"></i> KYC
+        </a>
+      </li>
+      <li class="border-bottom mb-2 pb-2">
+        <a class="d-flex align-items-center " href="{% url 'home' %}">
+           <i class="bi bi-house-door-fill me-1"></i> Home Page
+      </li>
+
+        <a class="btn btn-danger me-4 mt-3" href="{% url 'userprofile:logout' %}">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </a>
+    </ul>
+  </div>
+
+  <!-- <header id="header" class="header d-flex align-items-center sticky-top bg-dark-subtle">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+      <button class="btn open-menu-btn me-4 text-white" onclick="openNav()">☰ Menu</button>
+      <div class="d-flex align-items-center justify-content-end ms-auto">
+        <div class="d-flex align-items-center me-2">
+          {% if user_profile.profile_image %}
+          <h6 class="mb-0 me-2 text-dark">{{user.username|capfirst}}</h6>
+          <img src="{{ user_profile.profile_image.url }}" alt="Profile Image" class="img-fluid profile-img-navbar">
+          {% else %}
+          <div class="d-flex flex-column align-items-center">
+            <i class="bi bi-person-circle fs-2 text-dark"></i>
+            <h6 class="mt-1 text-dark">{{ user.username|capfirst }}</h6>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </header> -->
+
+  <header id="header" class="header d-flex align-items-center sticky-top bg-dark-subtle">
+  <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+    <!-- Menu Button -->
+    <button class="btn open-menu-btn me-4 text-white" onclick="openNav()">☰ Menu</button>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" class="me-4"></div>
+
+    <div class="d-flex align-items-center justify-content-end ms-auto">
+      <div class="d-flex align-items-center me-2">
+        {% if user_profile.profile_image %}
+        <h6 class="mb-0 me-2 text-dark">{{user.username|capfirst}}</h6>
+        <img src="{{ user_profile.profile_image.url }}" alt="Profile Image" class="img-fluid profile-img-navbar">
+        {% else %}
+        <div class="d-flex flex-column align-items-center">
+          <i class="bi bi-person-circle fs-2 text-dark"></i>
+          <h6 class="mt-1 text-dark">{{ user.username|capfirst }}</h6>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</header>
+
+
+<!-- about breadcrumb -->
+<section class="w3l-about-breadcrumb text-center" 
+         style="margin-top: 0; padding-top: 0;">
+  <div class="breadcrumb-bg breadcrumb-bg-about py-sm-5 py-4" 
+       style="padding-top: 0 !important; margin-top: 0 !important; 
+              background: url('/static/assets/images/breadcrumb.jpeg') no-repeat center center; 
+              background-size: cover;">
+      <div class="container py-2" style="padding-top: 0 !important; margin-top: 0 !important;">
+          <h2 class="title mb-5 mt-5">Wallet</h2>
+          <ul class="breadcrumbs-custom-path mt-2">
+              <li><a href="#">Welcome</a></li>
+              <li class="active"><span class="fa fa-arrow-right mx-2" aria-hidden="true"></span>{{ user.username|capfirst }}</li>
+          </ul>
+      </div>
+  </div>
+</section>
+
+
+<!-- //about breadcrumb -->
+
+  <section class="container my-4" id="main-content">
+    <div class="tab-content p-3">
+      <div class="tab-pane fade show active" id="dashboard">
+        <!-- Dashboard content unchanged -->
+        <section class="container my-4">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="d-flex align-items-center p-3 rounded shadow-sm" style="background-color: #FFF5D9;">
+                <div class="me-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #FFBB38;">
+                    <i class="bi bi-wallet2 text-white fs-4"></i>
+                  </div>
+                </div>
+                <div>
+                  <p class="mb-1 fw-semibold text-dark">My Balance</p>
+                  <span class="fw-bold">${{ profile.balance }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex align-items-center p-3 rounded shadow-sm" style="background-color: #E7EDFF;">
+                <div class="me-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #396AFF;">
+                    <i class="bi bi-graph-up-arrow text-white fs-4"></i>
+                  </div>
+                </div>
+                <div>
+                  <p class="mb-1 fw-semibold text-dark">Profits Earned</p>
+                  <span class="fw-bold">${{ profile.return_of_investment }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex align-items-center p-3 rounded shadow-sm" style="background-color: #DCFAF8;">
+                <div class="me-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #16DBCC;">
+                    <i class="bi bi-people-fill text-white fs-4"></i>
+                  </div>
+                </div>
+                <div>
+                  <p class="mb-1 fw-semibold text-dark">Referral Bonus</p>
+                  <span class="fw-bold">${{ profile.referral_reward }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Glow Button -->
+<button id="refToggleBtn"
+    class="btn btn-primary w-100 fw-bold py-3 mb-4 referral-btn">
+    🎁 Refer & Earn More Profits
+</button>
+
+<!-- Hidden Referral Box -->
+<div id="referralSection" class="collapse">
+
+    <div class="card referral-card p-4 text-center text-white mb-4">
+
+        <h3 class="fw-bold mb-3">
+            💰 Refer & Earn
+        </h3>
+
+        <p class="small opacity-75 mb-4">
+            Share your referral link. When someone registers, their username will appear below.
+        </p>
+
+        <!-- Referral Link Row -->
+        <div class="input-group mb-4">
+            <input type="text" class="form-control text-center"
+                id="referralLinkInput"
+                readonly
+                value="{{ request.scheme }}://{{ request.get_host }}{% url 'userprofile:register' %}?ref={{ user.userprofile.referral_code }}">
+            <button class="btn btn-info fw-bold" id="copyLinkBtn" style="background-color: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%)!important;">Copy 🔗</button>
+        </div>
+
+        <!-- Referrals List -->
+        {% if my_referrals %}
+        <div class="p-3 rounded referral-list-box mt-3">
+
+            <h5 class="text-success fw-bold mb-3">People You Referred</h5>
+
+            <ul class="list-group">
+                {% for u in my_referrals %}
+                <li class="list-group-item bg-dark text-success fw-semibold">
+                    @{{ u.user.username|slice:":5"|capfirst }}
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- ====== CSS ====== -->
+<style>
+/* Gradient glowing button */
+.referral-btn {
+    background: linear-gradient(135deg, #524dd3, #6d63ff, #3b34a3);
+    border: none;
+    box-shadow: 0 0 15px rgba(99, 92, 255, 0.7);
+    transition: 0.3s ease-in-out;
+}
+.referral-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(99, 92, 255, 1);
+}
+
+/* Referral card gradient */
+.referral-card {
+    background: linear-gradient(135deg, #524dd3 0%, #705df5 40%, #3b34a3 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Referral list box */
+.referral-list-box {
+    background: #0c114a;
+    border: 1px solid #1b2377;
+    border-radius: 12px;
+}
+
+/* Mobile adjustments */
+@media(max-width: 576px){
+    .referral-btn { font-size: 1rem; padding: 12px; }
+    .referral-card { padding: 18px; }
+}
+</style>
+
+
+<!-- ====== JS ====== -->
+<script>
+// Toggle collapse
+document.getElementById("refToggleBtn").addEventListener("click", function() {
+    let section = document.getElementById("referralSection");
+    let bsCollapse = new bootstrap.Collapse(section, {
+        toggle: true
+    });
+});
+
+// Copy referral link
+document.getElementById("copyLinkBtn").addEventListener("click", function () {
+    let input = document.getElementById("referralLinkInput");
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    this.innerText = "Copied! ✔";
+    setTimeout(() => { this.innerText = "Copy 🔗"; }, 2000);
+});
+</script> 
+      </div> 
+      <!-- important div -->
+
+      
+
+      <!-- referral end -->
+<div class="tab-pane fade" id="deposit">
+  <div class="container my-4">
+    <h4 class="text-center" style="color: #242859;">Deposit Section</h4>
+  </div>
+
+  <!-- DEPOSIT CRYPTO -->
+  <section class="content-container">
+    <div class="container">
+      <div class="row justify-content-center g-4">
+        <!-- Deposit Form -->
+        <div class="col-12 col-lg-7">
+          <div class="card shadow-lg p-4 h-100">
+            <h2 class="content-h2 text-center mb-4" style="color: #242859;">Make a deposit</h2>
+
+<p class="text-center mb-4" style="color: #242859;">
+    When you make a deposit here be sure that the system will update your balance in minutes upon verification. Your deposited amount is secured as it will be seen in our database.
+</p>
+
+            {% if messages %}
+              <ul class="messages">
+                {% for message in messages %}
+                  <li class="message">{{ message }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <form method="POST" action="{% url 'investment:deposit_view' %}">
+              {% csrf_token %}
+              <!-- Investment Plan -->
+              <div class="form-group mb-3">
+                <label for="id_selected_investment_plan">Select Investment Plan:</label>
+                <select name="selected_investment_plan" class="form-control custom-input" id="id_selected_investment_plan">
+                  {% for plan in investment_plans %}
+                    <option value="{{ plan.id }}">
+                      {{ plan.name }} - {{ plan.interest_rate }}% ROI for {{ plan.duration_days }} days
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Wallet Select -->
+              <div class="form-group mb-3">
+                <label for="id_selected_wallet">Select Wallet:</label>
+                <select name="selected_wallet" class="form-control custom-input" id="id_selected_wallet" required>
+                  <option value="">Select a Wallet</option>
+                  {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}" data-name="{{ wallet.name }}" data-address="{{ wallet.wallet_address }}">
+                      {{ wallet.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Wallet Address -->
+              <div class="form-group mb-3">
+                <label for="id_wallet_address">Wallet Address:</label>
+                <input type="text" name="wallet_address" class="form-control custom-input" placeholder="Wallet Address" id="id_wallet_address" readonly required>
+              </div>
+
+                        <!-- Crypto Network / Coin Network -->
+          <div class="form-group mb-3">
+            <label for="id_crypto_network">Select Network:</label>
+            <select name="crypto_network" class="form-control custom-input" id="id_crypto_network" required>
+              <option value="">Select Network</option>
+              <option value="bitcoin">Bitcoin (BTC)</option>
+              <option value="ethereum">Ethereum (ETH)</option>
+              <option value="binance-smart-chain">Binance Smart Chain (BSC)</option>
+              <option value="tron">Tron (TRX)</option>
+              <option value="polygon">Polygon (MATIC)</option>
+              <option value="litecoin">Litecoin (LTC)</option>
+              <option value="dogecoin">Dogecoin (DOGE)</option>
+              <!-- Add more networks as needed -->
+            </select>
+          </div>
+
+
+              <!-- Coin Name -->
+              <div class="form-group mb-3">
+                <label for="id_coinName">Coin Name:</label>
+                <input type="text" name="coinName" class="form-control custom-input" placeholder="Coin Name" id="id_coinName" readonly required>
+              </div>
+
+              <!-- Amount -->
+              <div class="form-group mb-3">
+                <label for="id_amountDeposit">Amount Deposit:</label>
+                <input type="number" name="amountDeposit" class="form-control custom-input" placeholder="Amount Deposit" min="0.01" step="0.01" id="id_amountDeposit" required>
+              </div>
+
+              <!-- Payment Date -->
+              <div class="form-group mb-4">
+                <label for="id_paymentDate">Payment Date:</label>
+                <input type="date" name="paymentDate" class="form-control custom-input" id="id_paymentDate" required>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="text-center">
+<button type="submit" class="btn btn-warning px-5" 
+        style="background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+               color: #ffffff;
+               border: 2px solid #0b1ae9;">
+    Submit Deposit
+</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+ <!-- Coin Type -->
+<div class="col-12 col-lg-5 mt-4 mt-lg-0">
+  <div class="card shadow-sm p-4 h-100">
+    <h4 class="text-center mb-4" style="color: #242859;">Coin Type</h4>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      {% for wallet in wallets %}
+        <div class="card acc-cs-box shadow-sm p-3 text-center" style="width: 100%; max-width: 240px;">
+          <div class="mb-2">
+            <span class="acc-icon-box d-inline-block mb-2" style="background-color: #FFE0EB; border-radius: 50%; padding: 10px;">
+              {% if wallet.icon and wallet.icon.name %}
+                <img alt="{{ wallet.name }}" src="{{ wallet.icon.url }}" style="width: 40px;">
+              {% else %}
+                <img alt="{{ wallet.name }}" src="{% static 'images/default-icon.png' %}" style="width: 40px;">
+              {% endif %}
+            </span>
+
+            <p class="mb-1 fw-bold">{{ wallet.name }}</p>
+            <span class="d-block small text-muted mb-2">{{ wallet.wallet_address }}</span>
+<button onclick="copyText(this, '{{ wallet.wallet_address }}')" class="btn btn-sm btn-outline-secondary" style="  background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%); color: white;">
+    Copy
+</button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+      </div>
+    </div>
+  </section>
+
+  <!-- JS to auto-fill coin name & address -->
+  <script>
+    document.getElementById('id_selected_wallet').addEventListener('change', function() {
+      const selected = this.options[this.selectedIndex];
+      document.getElementById('id_coinName').value = selected.getAttribute('data-name');
+      document.getElementById('id_wallet_address').value = selected.getAttribute('data-address');
+    });
+  </script>
+
+  <!-- Style input border on focus -->
+  <style>
+    .custom-input:focus {
+      border: 2px solid #0b1ae9!important;
+      box-shadow: 0 0 5px #031fbd80 !important;
+    }
+
+    
+    .acc-cs-box {
+      transition: all 0.3s ease;
+    }
+    .acc-cs-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</div>
+
+
+<!-- Withdrawal Tab -->
+<div class="tab-pane fade" id="withdrawal">
+  <div class="container my-4">
+    <h4 class="text-center" style="color: #242859">Withdrawal Section</h4>
+  </div>
+  <section class="content-container">
+    <div class="header-wrapper" style="padding-bottom: 30px;">
+      <div class="accounts-sec-2">
+        <div class="accounts-sec-2a">
+          <div class="accounts-sec-2a-container">
+
+            <!-- Intro Card -->
+            <div class="container">
+              <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-6">
+                  <div class="card text-center shadow p-4 mb-4">
+                    <p class="mb-0" style="color: #242859"
+>
+                      When you make a withdrawal here be sure that the system will update your balance in minutes upon verification,
+                      your withdrawn amount is secured as it will be seen in our database.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Withdrawal Form Card -->
+            <div class="container mt-3">
+              <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-6">
+                  <div class="card shadow p-4">
+                    <h4 class="text-center mb-4" style="color: #242859">Withdrawal Request</h4>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                      <ul class="messages">
+                        {% for message in messages %}
+                          <li class="message">{{ message }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="POST" action="{% url 'investment:withdrawal_view' %}">
+                      {% csrf_token %}
+
+                      <!-- Amount -->
+                      <div class="form-group mb-3">
+                        <label for="id_amountWithdraw">Amount to Withdraw:</label>
+                        <input type="number" name="amountWithdraw" class="form-control custom-input" placeholder="Amount to Withdraw" step="0.01" required id="id_amountWithdraw" value="{{ withdrawal_form.amountWithdraw.value }}">
+                      </div>
+
+                      <!-- Wallet Address -->
+                      <div class="form-group mb-3">
+                        <label for="id_wallet_address">Wallet Address:</label>
+                        <input type="text" name="wallet_address" class="form-control custom-input" placeholder="Wallet Address" maxlength="255" required id="id_wallet_address" value="{{ withdrawal_form.wallet_address.value|default:'' }}">
+                      </div>
+
+                      <!-- Coin Type -->
+                      <div class="form-group mb-3">
+                        <label for="id_coin_type">Select Coin:</label>
+                        <select name="coin_type" id="id_coin_type" class="form-select custom-input w-100" required>
+                          <option value="" disabled selected>Select Coin</option>
+                          <option value="BTC">Bitcoin (BTC)</option>
+                          <option value="ETH">Ethereum (ETH)</option>
+                          <option value="USDT">Tether (USDT)</option>
+                          <option value="BNB">Binance Coin (BNB)</option>
+                        </select>
+                      </div>
+
+                                          <!-- Crypto Network / Coin Network -->
+                    <div class="form-group mb-3">
+                      <label for="id_crypto_network">Select Network:</label>
+                      <select name="crypto_network" class="form-control custom-input" id="id_crypto_network" required>
+                        <option value="" disabled selected>Select Network</option>
+                        <option value="bitcoin">Bitcoin (BTC)</option>
+                        <option value="ethereum">Ethereum (ETH)</option>
+                        <option value="binance-smart-chain">Binance Smart Chain (BSC)</option>
+                        <option value="tron">Tron (TRX)</option>
+                        <option value="polygon">Polygon (MATIC)</option>
+                        <option value="litecoin">Litecoin (LTC)</option>
+                        <option value="dogecoin">Dogecoin (DOGE)</option>
+                        <!-- Add more networks as needed -->
+                      </select>
+                    </div>
+
+
+                      <!-- Payment Date -->
+                      <div class="form-group mb-4">
+                        <label for="id_paymentDate">Payment Date:</label>
+                        <input type="text" name="paymentDate" class="form-control custom-input flatpickr-input" id="id_paymentDate" value="{{ withdrawal_form.paymentDate.value|default:'' }}" placeholder="Select a date" required>
+                      </div>
+
+                      <!-- Submit -->
+                      <div class="text-center">
+<button type="submit" class="btn btn-warning px-5" 
+        style="background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+               color: #ffffff;
+               border: 2px solid #0b1ae9;">
+        Submit Withdrawal
+</button>                      </div>
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style -->
+  <style>
+    .custom-input {
+      padding: 0.6rem 0.75rem;
+      font-size: 1rem;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    /* .custom-input:focus {
+      border-color: #ffc107 !important;
+      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    } */
+
+    select.custom-input {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%205'%3E%3Cpath%20fill='%23000'%20d='M2%200L0%202h4L2%200z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 0.65rem auto;
+      padding-right: 2rem;
+    }
+  </style>
+
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#id_paymentDate", {
+      dateFormat: "Y-m-d",
+      minDate: "today"
+    });
+  </script>
+</div>
+
+
+
+<div class="tab-pane fade" id="transactions">
+    <div class="container-fluid">
+      <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem;">
+  <h2 class="content-h2 mb-2 text-center" style="color: #242859">Recent Transactions</h2>
+  <h2 class="content-h2 mb-2">
+    <a href="{% url 'userprofile:transaction_statement' %}" style="text-decoration: none; font-size: medium;color: #242859">View All</a>
+  </h2>
+</div>
+
+
+      <!-- Centering wrapper -->
+      <div class="d-flex justify-content-center">
+        <div class="table-responsive" style="max-width: 1000px; width: 100%;">
+          <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Description</th>
+                <th scope="col">Type</th>
+                <th scope="col">Date</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transaction in transactions %}
+                <tr>
+                  <td>#{{ transaction.id }}</td>
+                  <td>{{ transaction.description }}</td>
+                  <td>
+                    <span class="{% if transaction.transaction_type == 'deposit' %}text-success{% elif transaction.transaction_type == 'withdrawal' %}text-danger{% elif transaction.transaction_type == 'roi' %}text-warning{% else %}text-muted{% endif %}">
+                      {{ transaction.transaction_type|title }}
+                    </span>
+                  </td>
+                  <td>{{ transaction.created_at|date:"d M, H:i A" }}</td>
+                  <td>${{ transaction.amount }}</td>
+                  <td>
+                    <span class="badge {% if transaction.status == 'pending' %}bg-secondary{% elif transaction.status == 'approved' %}bg-success{% elif transaction.status == 'declined' %}bg-danger{% else %}bg-dark{% endif %}">
+                      {{ transaction.status|title }}
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-muted">No transactions found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+
+    <div class="tab-pane fade" id="profile">
+  <div class="container my-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10 col-12">
+        <div class="card shadow-lg p-4">
+          <form method="POST" enctype="multipart/form-data" action="{% url 'userprofile:profile-update' %}">
+            {% csrf_token %}
+            <div class="container mt-2">
+              <h2 class="mb-4 text-center"  style="color: #242859">KYC</h2>
+
+              <!-- First Name -->
+              <div class="form-group mb-3">
+                <label for="{{ profile_edit_form.first_name.id_for_label }}">First Name:</label>
+                <input type="text" name="{{ profile_edit_form.first_name.name }}" value="{{ profile_edit_form.first_name.value|default:'' }}" id="{{ profile_edit_form.first_name.id_for_label }}" class="form-control custom-input">
+                {% if profile_edit_form.first_name.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.first_name.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Last Name -->
+              <div class="form-group mb-3">
+                <label for="{{ profile_edit_form.last_name.id_for_label }}">Last Name:</label>
+                <input type="text" name="{{ profile_edit_form.last_name.name }}" value="{{ profile_edit_form.last_name.value|default:'' }}" id="{{ profile_edit_form.last_name.id_for_label }}" class="form-control custom-input">
+                {% if profile_edit_form.last_name.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.last_name.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Country -->
+              <div class="form-group mb-3">
+                <label for="{{ profile_edit_form.country.id_for_label }}">Country:</label>
+                <select name="country" id="{{ profile_edit_form.country.id_for_label }}" class="form-control custom-input">
+                  {% for country in profile_edit_form.country.field.choices %}
+                    <option value="{{ country.0 }}" {% if country.0 == profile_edit_form.instance.country %}selected{% endif %}>
+                      {{ country.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+                {% if profile_edit_form.country.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.country.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Address -->
+              <div class="form-group mb-3">
+                <label for="{{ profile_edit_form.address.id_for_label }}">Address:</label>
+                <textarea name="address" id="{{ profile_edit_form.address.id_for_label }}" class="form-control custom-input" rows="3">{{ profile_edit_form.address.value|default:'' }}</textarea>
+                {% if profile_edit_form.address.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.address.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Govt Issued ID -->
+              <div class="form-group mb-4">
+                <label for="{{ profile_edit_form.govt_issued_id.id_for_label }}">Government Issued ID:</label>
+                {% if profile_edit_form.instance.govt_issued_id %}
+                  <p class="small">Currently: <a href="{{ profile_edit_form.instance.govt_issued_id.url }}" target="_blank">{{ profile_edit_form.instance.govt_issued_id.name }}</a></p>
+                {% endif %}
+                <input type="file" name="govt_issued_id" id="{{ profile_edit_form.govt_issued_id.id_for_label }}" class="form-control custom-input">
+                {% if profile_edit_form.govt_issued_id.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.govt_issued_id.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Trading Certificates -->
+              <div class="form-group mb-4">
+                <label for="{{ profile_edit_form.trading_certificates.id_for_label }}">Trading Certificates:</label>
+                {% if profile_edit_form.instance.trading_certificates %}
+                  <p class="small">Currently: <a href="{{ profile_edit_form.instance.trading_certificates.url }}" target="_blank">{{ profile_edit_form.instance.trading_certificates.name }}</a></p>
+                {% endif %}
+                <input type="file" name="trading_certificates" id="{{ profile_edit_form.trading_certificates.id_for_label }}" class="form-control custom-input">
+                {% if profile_edit_form.trading_certificates.errors %}
+                  <div class="text-danger">
+                    {% for error in profile_edit_form.trading_certificates.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Submit -->
+              <div class="text-center">
+<button type="submit" class="btn btn-warning px-5" 
+        style="background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+               color: #ffffff;
+               border: 2px solid #0b1ae9;">
+    Update Now
+</button>              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+  <!-- Style input focus border -->
+  <style>
+    /* .custom-input:focus {
+      border: 2px solid #ffc107 !important;
+      box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+    } */
+
+    .card {
+      border-radius: 12px;
+      background-color: #fff;
+    }
+
+    .form-control[type="file"] {
+      padding: 0.5rem;
+    }
+
+    @media (max-width: 576px) {
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</div>
+
+    </div>
+  </section>
+
+  <style>
+    /* Form Group Styling */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Form Control Styling */
+.form-control,
+.form-control-file {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* On focus */
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Labels */
+.form-group label {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+/* Submit Button Style */
+.transaction_btn {
+  background-color: #0d6efd;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.transaction_btn:hover {
+  background-color: #0b5ed7;
+}
+
+
+
+  </style>
+  <style>
+  /* Hide all languages first */
+  .goog-te-menu2-item {
+    display: none !important;
+  }
+
+  /* Show only selected languages */
+  .goog-te-menu2-item span.text:contains('English'),
+  .goog-te-menu2-item span.text:contains('Spanish'),
+  .goog-te-menu2-item span.text:contains('French'),
+  .goog-te-menu2-item span.text:contains('German'),
+  .goog-te-menu2-item span.text:contains('Chinese'),
+  .goog-te-menu2-item span.text:contains('Arabic'),
+  .goog-te-menu2-item span.text:contains('Portuguese') {
+    display: block !important;
+  }
+
+  /* Fix Google dropdown height */
+  .goog-te-menu-frame {
+    height: auto !important;
+  }
+</style>
+
+
+    <style>
+        /* Preloader Background */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0f1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Loader Wrapper */
+        .crypto-loader {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Rotating Crypto Rings */
+        .crypto-loader .ring {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top: 4px solid #242859;   /* updated color */
+            animation: rotate 1.3s linear infinite;
+        }
+
+        .crypto-loader .ring:nth-child(2) {
+            width: 110px;
+            height: 110px;
+            border-top-color: #0dcaf0;
+            animation-duration: 1.7s;
+        }
+
+        .crypto-loader .ring:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            border-top-color: #28d7a3;
+            animation-duration: 2.2s;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Gradient Brand Text */
+        .loader-text {
+            margin-top: 170px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: "Poppins", sans-serif;
+            animation: fadeText 2s ease-in-out infinite;
+
+            background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeText {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        /* Demo Content */
+        .content {
+            padding: 40px;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+
+<script>
+function copyText(button, walletAddress) {
+    navigator.clipboard.writeText(walletAddress)
+        .then(() => {
+            const originalText = button.innerText;   // Save original button text
+            button.innerText = "Copied!";           // Change text to Copied!
+            button.disabled = true;                 // Optional: disable briefly
+
+            setTimeout(() => {
+                button.innerText = originalText;   // Revert text after 2 seconds
+                button.disabled = false;           // Re-enable button
+            }, 2000);
+        })
+        .catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+}
+</script>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    }, 'google_translate_element');
+  }
+</script>
+
+
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(function() {
+        document.getElementById("preloader").style.display = "none";
+    }, 1200); 
+});
+</script>
+
+
+
+<script type="text/javascript" 
+src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

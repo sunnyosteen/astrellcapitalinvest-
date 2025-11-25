@@ -1,0 +1,877 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Transactions | {{ user.username|capfirst }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Astrellcapitalinvest — Updated brand theme */
+        :root{
+            --bg: #ffffff;               /* page background */
+            --card: #ffffff;             /* card background */
+            --card-border: #e0e0e0;      /* card border */
+            --text: #0d00c2;             /* main text */
+            --muted: #4a4b64;            /* muted text */
+            --brand-primary: #0b1ae9;    /* primary brand color */
+            --brand-accent: #242859;     /* accent blue */
+            --primary-gradient: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+            --table-header-gradient: linear-gradient(135deg, #242859 0%, #0b1ae9 100%);
+            --shadow-lg: 0 10px 30px rgba(11, 26, 233, 0.15);
+            --transition: all 0.22s ease;
+            --radius: 12px;
+        }
+
+        /* Reset + base */
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%}
+        body{
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            line-height:1.45;
+        }
+
+        a{color:inherit;text-decoration:none}
+
+       
+        /* HEADER - PROFESSIONAL MOBILE-FIXED */
+        .header {
+            position: fixed;
+            top: 10px;
+            width: 95%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            background-color: #ffffff;
+            border-radius: 12px;
+            color: #0b1ae9;
+            height: 60px;
+            min-height: 60px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 20px rgba(11, 26, 233, 0.1);
+            border: 1px solid rgba(11, 26, 233, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            height: 35px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Search - Mobile Optimized */
+        .search-container {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(11, 26, 233, 0.45);
+            font-size: 14px;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 35px;
+            border-radius: 8px;
+            border: 1px solid rgba(11, 26, 233, 0.15);
+            background: rgba(255,255,255,0.9);
+            color: var(--text);
+            width: 200px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            height: 36px;
+        }
+
+        /* Google Translate Styles */
+        #custom_translate_wrapper {
+            position: relative;
+        }
+
+        #custom_lang_icon {
+            font-size: 1.1rem;
+            color: #0b1ae9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(11, 26, 233, 0.1);
+        }
+
+        #custom_google_translate {
+            display: none;
+            position: absolute;
+            top: 42px;
+            right: 0;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 9999;
+            transition: all 0.3s ease-in-out;
+            border: 1px solid rgba(11, 26, 233, 0.15);
+            min-width: 140px;
+        }
+
+        /* Dashboard button - Mobile Optimized */
+        .btn-dashboard {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(11, 26, 233, 0.15);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .btn-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(11, 26, 233, 0.2);
+        }
+
+        .btn-dashboard:hover::before {
+            left: 100%;
+        }
+
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            .header {
+                top: 8px;
+                width: 96%;
+                padding: 10px 15px;
+                height: 55px;
+                min-height: 55px;
+                border-radius: 10px;
+            }
+
+            .logo-container img {
+                height: 30px;
+            }
+
+            .search-input {
+                width: 160px;
+                padding: 6px 10px 6px 32px;
+                font-size: 0.85rem;
+                height: 34px;
+            }
+
+            .search-icon {
+                left: 10px;
+                font-size: 13px;
+            }
+
+            .btn-dashboard {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+                height: 34px;
+            }
+
+            #custom_lang_icon {
+                width: 34px;
+                height: 34px;
+                font-size: 1rem;
+            }
+
+            .header-actions {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                top: 6px;
+                width: 97%;
+                padding: 8px 12px;
+                height: 50px;
+                min-height: 50px;
+                border-radius: 8px;
+            }
+
+            .logo-container img {
+                height: 28px;
+            }
+
+            .search-input {
+                width: 140px;
+                padding: 5px 8px 5px 30px;
+                font-size: 0.8rem;
+                height: 32px;
+            }
+
+            .search-icon {
+                left: 8px;
+                font-size: 12px;
+            }
+
+            .btn-dashboard {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+                height: 32px;
+            }
+
+            #custom_lang_icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+
+            .header-actions {
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .search-input {
+                width: 120px;
+            }
+            
+            .btn-dashboard {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Hide Google Translate branding */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .goog-te-gadget span {
+            display: none !important;
+        }
+
+        .goog-te-menu2 {
+            max-width: 200px !important;
+            background: #ffffff !important;
+            border: 1px solid rgba(11, 26, 233, 0.1) !important;
+        }
+
+        .goog-te-menu2-item div, .goog-te-menu2-item {
+            color: var(--text) !important;
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(11, 26, 233, 0.1) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: rgba(11, 26, 233, 0.2) !important;
+        }
+
+        /* Main layout */
+        main.main-content{
+            max-width:1200px;
+            margin: 90px auto 60px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            main.main-content {
+                margin: 75px auto 50px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main.main-content {
+                margin: 65px auto 40px;
+                padding: 12px;
+            }
+        }
+
+        .transactions-card{
+            background:var(--card);
+            border:1px solid var(--card-border);
+            border-radius:var(--radius);
+            padding:20px;
+            box-shadow:var(--shadow-lg);
+            transition:var(--transition);
+        }
+
+        .page-title{
+            font-size:20px;
+            font-weight:800;
+            color:var(--brand-primary);
+            margin-bottom:6px
+        }
+
+        .section-title{
+            color:var(--muted);
+            font-weight:600;
+            margin-bottom:18px
+        }
+
+        /* Table container */
+        .table-container{
+            width:100%;
+            overflow:auto;
+            border-radius:10px;
+            border:1px solid rgba(11, 26, 233, 0.1);
+            background: rgba(255,255,255,0.5);
+        }
+
+        table.transactions-table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:820px;
+        }
+
+        table.transactions-table thead{
+            background: var(--table-header-gradient);
+            color:#fff;
+            border-top-left-radius:10px;
+            border-top-right-radius:10px;
+        }
+
+        table.transactions-table th{
+            padding:14px 18px;
+            text-align:left;
+            font-size:12px;
+            font-weight:700;
+            letter-spacing:0.6px;
+            color:#fff;
+            text-transform:uppercase;
+        }
+
+        table.transactions-table tbody tr{
+            border-bottom:1px solid rgba(11, 26, 233, 0.05);
+            transition: background .18s ease, transform .18s ease;
+        }
+
+        table.transactions-table tbody tr:hover{
+            background: linear-gradient(90deg, rgba(11, 26, 233, 0.03), rgba(36, 40, 89, 0.02));
+            transform: translateY(-1px);
+        }
+
+        table.transactions-table td{
+            padding:14px 18px;
+            font-size:14px;
+            color:var(--muted);
+            vertical-align:middle;
+        }
+
+        /* Amount styling */
+        .amount {
+            font-weight:700;
+            color:var(--text)
+        }
+
+        /* Status badges */
+        .status-badge{
+            display:inline-block;
+            padding:6px 12px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.6px;
+        }
+
+        .status-completed{
+            background:rgba(11, 26, 233, 0.12);
+            color:var(--brand-primary)
+        }
+
+        .status-pending{
+            background:rgba(255,193,7,0.08);
+            color:#f59e0b
+        }
+
+        .status-approved{
+            background:rgba(36, 40, 89, 0.12);
+            color:var(--brand-accent)
+        }
+
+        .status-failed{
+            background:rgba(239,68,68,0.08);
+            color:#ef4444
+        }
+
+        /* Small helper */
+        .muted {
+            color:var(--muted);
+            font-size:13px
+        }
+
+        /* Print button area */
+        .print-section{
+            margin-top:18px;
+            text-align:center
+        }
+
+        .btn-print{
+            padding:11px 20px;
+            border-radius:10px;
+            background:var(--primary-gradient);
+            color:#fff;
+            border:none;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 12px 40px rgba(11, 26, 233, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .btn-print::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-print:hover::before {
+            left: 100%;
+        }
+
+        .btn-print i{
+            margin-right:8px
+        }
+
+        /* Scroll to top */
+        .scroll-top{
+            position:fixed;
+            right:18px;
+            bottom:18px;
+            width:52px;
+            height:52px;
+            border-radius:50%;
+            background:var(--primary-gradient);
+            color:#fff;
+            border:none;
+            cursor:pointer;
+            box-shadow:0 12px 36px rgba(11, 26, 233, 0.2);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:16px;
+            z-index:90;
+            transition: var(--transition);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            box-shadow:0 16px 40px rgba(11, 26, 233, 0.3);
+        }
+
+        .capitalize {
+            text-transform: capitalize;
+        }
+    </style>
+
+    
+    <style>
+        /* Preloader Background */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0f1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Loader Wrapper */
+        .crypto-loader {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Rotating Crypto Rings */
+        .crypto-loader .ring {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top: 4px solid #242859;   /* updated color */
+            animation: rotate 1.3s linear infinite;
+        }
+
+        .crypto-loader .ring:nth-child(2) {
+            width: 110px;
+            height: 110px;
+            border-top-color: #0dcaf0;
+            animation-duration: 1.7s;
+        }
+
+        .crypto-loader .ring:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            border-top-color: #28d7a3;
+            animation-duration: 2.2s;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Gradient Brand Text */
+        .loader-text {
+            margin-top: 170px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: "Poppins", sans-serif;
+            animation: fadeText 2s ease-in-out infinite;
+
+            background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeText {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        /* Demo Content */
+        .content {
+            padding: 40px;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+ 
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="crypto-loader">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <span class="loader-text">AstrellCapitalInvest</span>
+        </div>
+    </div>
+
+
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="logo-container">
+            <a class="navbar-brand" href="{% url 'home' %}" aria-label="Astrellcapitalinvest home">
+                <img src="{% static 'assets/images/logo4.png' %}" alt="Astrellcapitalinvest">
+            </a>
+        </div>
+
+        <div class="header-actions">
+            <div class="search-container" role="search" aria-label="Search transactions">
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                <input class="search-input" type="text" placeholder="Search transactions..." />
+            </div>
+
+            <!-- Google Translate Widget -->
+            <div id="custom_translate_wrapper">
+                <div id="custom_lang_icon" onclick="toggleCustomTranslate()">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div id="custom_google_translate"></div>
+            </div>
+
+            <!-- Dashboard button -->
+            <a class="btn-dashboard" href="{% url 'userprofile:dashboard' %}">Dashboard</a>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main-content" role="main">
+        <div class="transactions-card" role="region" aria-labelledby="transactions-heading">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
+                <div>
+                    <div id="transactions-heading" class="page-title">Transactions</div>
+                    <div class="section-title">Recent Transactions</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                    <div class="muted" style="font-weight:600;font-size:.95rem">Showing latest records</div>
+                </div>
+            </div>
+
+            <div class="table-container" role="table" aria-label="Transactions table">
+                <table class="transactions-table" aria-describedby="transactions-heading">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr>
+                            <td><span class="muted">#{{ transaction.id }}</span></td>
+                            <td>{{ transaction.description }}</td>
+                            <td class="muted capitalize">{{ transaction.transaction_type }}</td>
+                            <td class="muted">{{ transaction.created_at|date:"d M, H:i A" }}</td>
+                            <td class="amount">${{ transaction.amount }}</td>
+                            <td>
+                                {% if transaction.status == 'completed' %}
+                                    <span class="status-badge status-completed">Completed</span>
+                                {% elif transaction.status == 'pending' %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                {% elif transaction.status == 'approved' %}
+                                    <span class="status-badge status-approved">Approved</span>
+                                {% else %}
+                                    <span class="status-badge status-failed">Failed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">
+                                No transactions found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Print button -->
+            <div class="print-section">
+                <button onclick="window.print()" class="btn-print" aria-label="Print transactions to PDF">
+                    <i class="fas fa-file-pdf"></i> Print to PDF
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scroll to top -->
+    <button class="scroll-top" title="Back to top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Hidden Google Translate Element -->
+    <div id="google_translate_element" style="display:none;"></div>
+
+    <script>
+        // PRELOADER — hide when page loaded
+        window.addEventListener('load', function () {
+            const pre = document.getElementById('preloader');
+            if (!pre) return;
+            setTimeout(() => {
+                pre.style.opacity = '0';
+                pre.style.visibility = 'hidden';
+                pre.style.pointerEvents = 'none';
+            }, 600);
+        });
+
+        // SEARCH — client-side filter (non-destructive)
+        (function(){
+            const input = document.querySelector('.search-input');
+            if (!input) return;
+            input.addEventListener('input', function (e) {
+                const q = e.target.value.trim().toLowerCase();
+                const rows = document.querySelectorAll('.transactions-table tbody tr');
+                rows.forEach(row => {
+                    if (!row.querySelector('td')) return;
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = (q === '' || text.indexOf(q) !== -1) ? '' : 'none';
+                });
+            });
+        })();
+
+        // GOOGLE TRANSLATE FUNCTIONS
+        function toggleCustomTranslate() {
+            const el = document.getElementById("custom_google_translate");
+            if (el.style.display === "block") {
+                el.style.opacity = 0;
+                setTimeout(() => el.style.display = "none", 300);
+            } else {
+                el.style.display = "block";
+                setTimeout(() => el.style.opacity = 1, 10);
+            }
+        }
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,es,fr,de,it,pt,ru,zh-CN,ja,ar,ko,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'custom_google_translate');
+
+            setTimeout(() => {
+                const googleBranding = document.querySelector('.goog-logo-link');
+                const googleText = document.querySelector('.goog-te-gadget');
+                
+                if (googleBranding) googleBranding.style.display = 'none';
+                if (googleText) {
+                    const spans = googleText.getElementsByTagName('span');
+                    for (let span of spans) {
+                        if (span.textContent.includes('Powered')) {
+                            span.style.display = 'none';
+                        }
+                    }
+                }
+
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.style.background = '#ffffff';
+                    select.style.color = 'var(--text)';
+                    select.style.border = '1px solid rgba(11, 26, 233, 0.3)';
+                    select.style.borderRadius = '4px';
+                    select.style.padding = '6px 8px';
+                    select.style.fontSize = '12px';
+                }
+
+                loadSavedLanguage();
+                
+            }, 1000);
+        }
+
+        function loadSavedLanguage() {
+            setTimeout(() => {
+                const savedLang = localStorage.getItem('userLang');
+                if (savedLang && savedLang !== 'en') {
+                    const select = document.querySelector('.goog-te-combo');
+                    if (select) {
+                        select.value = savedLang;
+                        select.dispatchEvent(new Event('change'));
+                    }
+                }
+                
+                if (!savedLang) {
+                    autoDetectLanguage();
+                }
+            }, 1500);
+        }
+
+        function autoDetectLanguage() {
+            const browserLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0];
+            const supportedLangs = ['es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ar', 'ko', 'hi'];
+            
+            if (supportedLangs.includes(browserLang) && browserLang !== 'en') {
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    const langMap = {
+                        'zh': 'zh-CN',
+                        'ko': 'ko',
+                        'hi': 'hi'
+                    };
+                    
+                    const googleLang = langMap[browserLang] || browserLang;
+                    select.value = googleLang;
+                    select.dispatchEvent(new Event('change'));
+                    localStorage.setItem('userLang', googleLang);
+                }
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const translateWrapper = document.getElementById('custom_translate_wrapper');
+            const translateDropdown = document.getElementById('custom_google_translate');
+            
+            if (!translateWrapper.contains(event.target) && translateDropdown.style.display === 'block') {
+                translateDropdown.style.opacity = 0;
+                setTimeout(() => translateDropdown.style.display = 'none', 300);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof google === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                script.type = 'text/javascript';
+                document.head.appendChild(script);
+            } else {
+                googleTranslateElementInit();
+            }
+
+            document.addEventListener('DOMNodeInserted', function(e) {
+                if (e.target.className && e.target.className.includes('goog-te-combo')) {
+                    e.target.addEventListener('change', function() {
+                        localStorage.setItem('userLang', this.value);
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+        // Auto-hide preloader when page is ready
+        window.addEventListener("load", function () {
+            const loader = document.getElementById("preloader");
+            loader.style.opacity = "0";
+
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>

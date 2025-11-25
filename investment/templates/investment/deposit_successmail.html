@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deposit Approved - Astrellcapitalinvest</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid rgba(11, 26, 233, 0.1);
+      overflow: hidden;
+      box-shadow: 0 5px 28px rgba(11, 26, 233, 0.1);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    .header img {
+      max-width: 165px;
+      filter: brightness(0) invert(1);
+    }
+
+    h2 {
+      margin-top: 25px;
+      color: #0b1ae9;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #4a4b64;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .info-box {
+      background: rgba(11, 26, 233, 0.05);
+      border-left: 5px solid #0b1ae9;
+      padding: 22px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(11, 26, 233, 0.1);
+    }
+
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, #242859 0%, #0b1ae9 50%, #f4f7ff 100%);
+      color: #ffffff;
+      padding: 15px 38px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 25px;
+      box-shadow: 0 4px 14px rgba(11, 26, 233, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(11, 26, 233, 0.3);
+    }
+
+    .button:hover::before {
+      left: 100%;
+    }
+
+    .footer {
+      background: rgba(11, 26, 233, 0.05);
+      padding: 25px;
+      text-align: center;
+      color: #4a4b64;
+      font-size: 14px;
+      border-top: 1px solid rgba(11, 26, 233, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    
+    <div class="header">
+      <img src="{% static 'assets/images/logo4.png' %}" alt="Astrellcapitalinvest Logo" />
+    </div>
+
+    <div class="content">
+      <h2>Deposit Approved 🎉</h2>
+
+      <p>Hello <strong>{{ username }}</strong>,</p>
+
+      <p>Your deposit has been <strong style="color:#0b1ae9;">successfully approved</strong> and added to your account.</p>
+
+      <div class="info-box">
+        <p><strong>Approved Deposit Details</strong></p>
+        <p>💰 Amount Approved: <strong>${{ amount }}</strong></p>
+        <p>📝 Transaction ID: <strong>{{ transaction_id }}</strong></p>
+        <p>📌 Status: <strong style="color:#0b1ae9;">Approved</strong></p>
+        <p>📅 Date Approved: <strong>{{ approval_date }}</strong></p>
+      </div>
+
+      <p>Your updated balance is now available for investment.</p>
+
+      <div style="text-align:center;">
+        <a href="https://www.astrellcapitalinvest.com/userprofile/dashboard/" class="button">
+          Go to Dashboard
+        </a>
+      </div>
+
+      <p>If you did not authorize this deposit, please contact support immediately.</p>
+    </div>
+
+    <div class="footer">
+      <p>&copy; {{ now|date:"Y" }} Astrellcapitalinvest. All rights reserved.</p>
+      <p>This is an automated message — please do not reply.</p>
+    </div>
+
+  </div>
+</body>
+</html>
